@@ -1,0 +1,4 @@
+Type,Start,End,Duration,Total Energy (kcal),Active Energy (kcal),Max Heart Rate (bpm),Avg Heart Rate (bpm),Distance (mi),Avg Speed(mi/hr),Step Count (count),Step Cadence (spm),Swimming Stroke Count (count),Swim Stoke Cadence (spm),Flights Climbed (count),Elevation Ascended (ft),Elevation Descended (ft)
+Running,2022-11-03 19:18,2022-11-03 19:44,00:25:20,186.23,186.23,203,187.69,1.76,4.17,,,,,,,
+Walking,2022-07-16 08:53,2022-07-16 09:24,00:31:14,153.38,139.06,191,162.42,1.18,2.27,2679,1.43,,,14.0,91.8,
+Walking,2022-07-16 04:58,2022-07-16 07:08,02:02:54,855.64,686.79,183,144.91,5.12,2.5,9931,1.35,,,21.0,1198,
