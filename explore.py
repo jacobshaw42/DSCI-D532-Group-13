@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("/home/jacob/DSCI-D532-Group-13/data/HealthAutoExport-2021-06-01-2022-01-01 Data.csv")
+df = pd.read_csv("data/HealthAutoExport-2021-06-01-2022-01-01 Data.csv")
 cols = [
         "Date",
         "Active Energy (kcal)",
