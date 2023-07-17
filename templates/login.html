@@ -3,32 +3,49 @@
 <head>
     <link rel="stylesheet" href="/static/login.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <title>Ludiflex | Login</title>
+    <title>Login</title>
 </head>
 <body>
-   <div class="box">
+    <div class="box">
     <div class="container">
-        <div class="input-field">
-            <input type="text" class="input" placeholder="Username" id="">
-            <i class='bx bx-user' ></i>
+    <form method='POST' action="">
+        {{form.hidden_tag()}}
+        <fieldset>
+        <div class="form-group">
+            {{form.email.label(class="form-control-label")}}
+            {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                        <span> {{error}}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+            {% endif %}
         </div>
-        <div class="input-field">
-            <input type="Password" class="input" placeholder="Password" id="">
-            <i class='bx bx-lock-alt'></i>
+        <div class="form-group">
+            {{form.password.label(class="form-control-label")}}
+            {% if form.password.errors %}
+                {{ form.password(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                        <span> {{error}}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.password(class="form-control form-control-lg") }}
+            {% endif %}
         </div>
-        <div class="input-field">
-            <input type="submit" class="submit" value="Login" id="">
+        </fieldset>
+        <div class="form-group">
+            {% for message in get_flashed_messages() %}
+            {{message}}
+            {% endfor %}
+            {{ form.submit(class="btn btn-outline-info")}}
         </div>
-        <div class="two-col">
-            <div class="one">
-               <input type="checkbox" name="" id="check">
-               <label for="check"> Remember Me</label>
-            </div>
-            <div class="two">
-                <label><a href="#">Forgot password?</a></label>
-            </div>
-        </div>
+    </form>
     </div>
-</div>  
+    </div>
 </body>
 </html>

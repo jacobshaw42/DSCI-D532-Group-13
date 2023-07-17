@@ -1,13 +1,29 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, flash
 import sqlite3
 import pandas as pd
+from login import LoginForm
+import os
+import sys
 
 app = Flask(__name__)
+app.debug = True
+app.config["SECRET_KEY"]=os.urandom(32)
 
 @app.route('/')
-@app.route('/login')
+    
+@app.route('/login', methods=['GET','POST'])
 def login_page():
-    return render_template('login.html')
+    form = LoginForm()
+    if form.validate_on_submit():
+        conn = sqlite3.connect("FinalProject.db")
+        curs = conn.cursor()
+        curs.execute("SELECT * FROM UserDim WHERE email = (?)", [form.email.data])
+        user = list(curs.fetchone())
+        if form.email.data == user[2] and form.password.data == user[3]:
+            return home_page()
+        else:
+            flash("Invalid Login",category="warning")
+    return render_template('login.html', title="Login", form=form)
 
 @app.route('/home')
 def home_page():
