@@ -49,10 +49,7 @@
           const newRow = document.createElement('tr');
           newRow.innerHTML = `
             <th scope="row">${row.row_number}</th>
-            <td>${row.type || row.id}</td>
-            <td>${row.desc || row.day}</td>
-            <td>${row.unit_of_measurement || row.month}</td>
-            ${buttonId === 2 ? `<td>${row.year}</td>` : ''}
+            ${getTableCells(buttonId, row)}
             <td>
               <a href="/edit/${row.id}">Edit</a>
               <a href="/delete/${row.id}">Delete</a>
@@ -62,18 +59,49 @@
         });
 
         // Update the table headers based on the buttonId
-        const columnNames = buttonId === 1
-          ? ['#', 'Type', 'Description', 'Unit of Measurement']
-          : ['#', 'id', 'day', 'month', 'year'];
+        let columnNames;
+        if (buttonId === 1) {
+          columnNames = ['#', 'Type', 'Description', 'Unit of Measurement'];
+        } else if (buttonId === 2) {
+          columnNames = ['#', 'id', 'day', 'month', 'year'];
+        } else if (buttonId === 3) {
+          columnNames = ['#', 'id', 'user_id', 'date_id', 'value'];
+        } else {
+          return;
+        }
         updateTableHeaders(columnNames);
       })
       .catch(error => {
         console.error('Error:', error);
       });
   }
+
+  function getTableCells(buttonId, row) {
+    let cells = '';
+    if (buttonId === 1) {
+      cells = `
+        <td>${row.type}</td>
+        <td>${row.desc}</td>
+        <td>${row.unit_of_measurement}</td>`;
+    } else if (buttonId === 2) {
+      cells = `
+        <td>${row.id}</td>
+        <td>${row.day}</td>
+        <td>${row.month}</td>
+        <td>${row.year}</td>`;
+    } else if (buttonId === 3) {
+      cells = `
+        <td>${row.id}</td>
+        <td>${row.user_id}</td>
+        <td>${row.date_id}</td>
+        <td>${row.value}</td>`;
+    }
+    return cells;
+  }
 </script>
 
 </head>
+
 
 <body>
 
@@ -114,9 +142,9 @@
   <!-- create button menu -->
 <div class="list-group-container">
   <div class="list-group">
-    <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(1)">Button 1</button>
-    <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(2)">Button 2</button>
-    <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(3)">Button 3</button>
+    <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(1)">HealthDim</button>
+    <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(2)">DateDim</button>
+    <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(3)">HealthFact</button>
   </div>
 </div>
 
