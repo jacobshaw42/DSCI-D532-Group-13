@@ -50,6 +50,14 @@ def query_button_2():
     conn.close()
     return df
 
+def query_button_3():
+    conn = sqlite3.connect('FinalProject.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM HealthFact")
+    colnames = [row[0] for row in c.description]
+    df = pd.DataFrame(c.fetchall(), columns=colnames)
+    conn.close()
+    return df
 
 @app.route('/get_table_data')
 def get_table_data():
@@ -63,6 +71,8 @@ def get_table_data():
         start_row = int(request.args.get('start_row', 0))
         num_rows = 10
         table_data = query_button_2()
+    elif button_id == 3:
+        table_data = query_button_3()
     else:
         return jsonify([])
 
