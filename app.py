@@ -41,7 +41,6 @@ def query_button_1(start_row, num_rows):
     conn.close()
     return df
 
-
 def query_button_2():
     conn = sqlite3.connect('FinalProject.db')
     c = conn.cursor()
@@ -50,6 +49,7 @@ def query_button_2():
     df = pd.DataFrame(c.fetchall(), columns=colnames)
     conn.close()
     return df
+
 
 @app.route('/get_table_data')
 def get_table_data():
@@ -60,6 +60,8 @@ def get_table_data():
         num_rows = 10
         table_data = query_button_1(start_row, num_rows)
     elif button_id == 2:
+        start_row = int(request.args.get('start_row', 0))
+        num_rows = 10
         table_data = query_button_2()
     else:
         return jsonify([])
