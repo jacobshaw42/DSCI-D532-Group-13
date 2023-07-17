@@ -50,35 +50,36 @@ c = conn.cursor()
 
 c.execute('''CREATE TABLE HealthFact(
     id INTEGER PRIMARY KEY,
-    user_id INTEGER,
-    date_id INTEGER,
-    healthData_id INTEGER,
+    user_id INTEGER NOT NULL,
+    date_id INTEGER NOT NULL,
+    healthData_id INTEGER NOT NULL,
     value NUMERIC (10,2)
 );''')
 
 c.execute('''CREATE TABLE UserDim(
     id INTEGER PRIMARY KEY,
-    name VARCHAR (100),
-    email VARCHAR (100)
+    name VARCHAR (100) NOT NULL,
+    email VARCHAR (100) NOT NULL,
+    password text NOT NULL
 );''')
 
 c.execute('''CREATE TABLE DateDim(
     id INTEGER PRIMARY KEY,
-    day INTEGER (2),
-    month INTEGER (2),
-    year INTEGER (4)
+    day INTEGER (2) NOT NULL,
+    month INTEGER (2) NOT NULL,
+    year INTEGER (4) NOT NULL
 );''')
 
 c.execute('''CREATE TABLE HealthDim(
     id INTEGER PRIMARY KEY,
-    type VARCHAR (25),
+    type VARCHAR (25) NOT NULL,
     desc VARCHAR (255),
     unit_of_measurement VARCHAR (20)
 );''')
 
 c.execute('''CREATE TABLE HealthClassifier(
     id INTEGER PRIMARY KEY,
-    healthData_id INTEGER,
+    healthData_id INTEGER NOT NULL,
     classifier VARCHAR (25),
     lower_bound NUMERIC,
     upper_bound NUMERIC
