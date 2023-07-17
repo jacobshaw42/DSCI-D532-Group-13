@@ -8,6 +8,34 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
 
+
+<!-- update the table headers -->
+<script>
+  function updateTableHeaders(columnNames) {
+    const tableHeader = document.getElementById('data-table').querySelector('thead');
+    tableHeader.innerHTML = '';
+
+    const headerRow = document.createElement('tr');
+
+    // Create the header cells based on the column names
+    columnNames.forEach(colname => {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.textContent = colname;
+      headerRow.appendChild(th);
+    });
+
+    // Add the "Actions" column header
+    const actionsTh = document.createElement('th');
+    actionsTh.scope = 'col';
+    actionsTh.textContent = 'Actions';
+    headerRow.appendChild(actionsTh);
+
+    tableHeader.appendChild(headerRow);
+  }
+</script>
+
+
 <!-- trigger when a button is clicked -->
 <script>
   function changeTableData(buttonId) {
@@ -24,7 +52,7 @@
             <td>${row.type || row.id}</td>
             <td>${row.desc || row.day}</td>
             <td>${row.unit_of_measurement || row.month}</td>
-            <td>${row.year}</td>
+            ${buttonId === 2 ? `<td>${row.year}</td>` : ''}
             <td>
               <a href="/edit/${row.id}">Edit</a>
               <a href="/delete/${row.id}">Delete</a>
@@ -32,20 +60,17 @@
           `;
           tableBody.appendChild(newRow);
         });
+
+        // Update the table headers based on the buttonId
+        const columnNames = buttonId === 1
+          ? ['#', 'Type', 'Description', 'Unit of Measurement']
+          : ['#', 'id', 'day', 'month', 'year'];
+        updateTableHeaders(columnNames);
       })
       .catch(error => {
         console.error('Error:', error);
       });
   }
-
-  // Add event listeners to the buttons
-  document.getElementById('button1').addEventListener('click', () => {
-    changeTableData(1);
-  });
-
-  document.getElementById('button2').addEventListener('click', () => {
-    changeTableData(2);
-  });
 </script>
 
 </head>
