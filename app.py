@@ -94,6 +94,44 @@ def get_table_data():
     table_data_list = table_data.to_dict('records')
     return jsonify(table_data_list)
     
+@app.route('/update_cell', methods=['POST'])
+def update_cell():
+    conn = sqlite3.connect('FinalProject.db')
+    c = conn.cursor()
+    data = request.get_json()
+    column = data['column']
+    id = data['id']
+    value = data['value']
+
+    if column == 'type':
+        table = 'HealthDim'
+        update_column = 'type'
+    elif column == 'desc':
+        table = 'HealthDim'
+        update_column = 'desc'
+    elif column == 'unit_of_measurement':
+        table = 'HealthDim'
+        update_column = 'unit_of_measurement'
+    elif column == 'day':
+        table = 'DateDim'
+        update_column = 'day'
+    elif column == 'month':
+        table = 'DateDim'
+        update_column = 'month'
+    elif column == 'year':
+        table = 'DateDim'
+        update_column = 'year'
+    elif column == 'value':
+        table = 'HealthFact'
+        update_column = 'value'
+    else:
+        return jsonify({'success': False})
+
+    c.execute(f"UPDATE {table} SET {update_column} = ? WHERE id = ?", (value, id))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
 
 if __name__ == '__main__':
     app.run()

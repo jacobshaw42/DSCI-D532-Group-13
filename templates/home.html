@@ -39,79 +39,123 @@
 <!-- trigger when a button is clicked -->
 <script>
   function changeTableData(buttonId) {
-    fetch(`/get_table_data?id=${buttonId}`)
-      .then(response => response.json())
-      .then(data => {
-        const tableBody = document.getElementById('data-table').querySelector('tbody');
-        tableBody.innerHTML = '';
+  fetch(`/get_table_data?id=${buttonId}`)
+    .then(response => response.json())
+    .then(data => {
+      const tableBody = document.getElementById('data-table').querySelector('tbody');
+      tableBody.innerHTML = '';
 
-        data.forEach(row => {
-          const newRow = document.createElement('tr');
-          newRow.innerHTML = `
-            <th scope="row">${row.row_number}</th>
-            ${getTableCells(buttonId, row)}
-            <td>
-              <a href="/edit/${row.id}">Edit</a>
-              <a href="/delete/${row.id}">Delete</a>
-            </td>
-          `;
-          tableBody.appendChild(newRow);
-        });
-
-        // Update the table headers based on the buttonId
-        let columnNames;
-        if (buttonId === 1) {
-          columnNames = ['#', 'Type', 'Description', 'Unit of Measurement'];
-        } else if (buttonId === 2) {
-          columnNames = ['#', 'id', 'day', 'month', 'year'];
-        } else if (buttonId === 3) {
-          columnNames = ['#', 'id', 'user_id', 'date_id', 'value'];
-        } else if (buttonId === 4) {
-          columnNames = ['#', 'id', 'Type', 'Description', 'Unit of Measurment', 'Date', 'value']
-        } 
-        else {
-          return;
-        }
-        updateTableHeaders(columnNames);
-      })
-      .catch(error => {
-        console.error('Error:', error);
+      data.forEach(row => {
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+          <th scope="row">${row.row_number}</th>
+          ${getTableCells(buttonId, row)}
+          <td>
+            <a href="/edit/${row.id}">Edit</a>
+            <a href="/delete/${row.id}">Delete</a>
+          </td>
+        `;
+        tableBody.appendChild(newRow);
       });
-  }
 
-  function getTableCells(buttonId, row) {
-    let cells = '';
-    if (buttonId === 1) {
-      cells = `
-        <td>${row.type}</td>
-        <td>${row.desc}</td>
-        <td>${row.unit_of_measurement}</td>`;
-    } else if (buttonId === 2) {
-      cells = `
-        <td>${row.id}</td>
-        <td>${row.day}</td>
-        <td>${row.month}</td>
-        <td>${row.year}</td>`;
-    } else if (buttonId === 3) {
-      cells = `
-        <td>${row.id}</td>
-        <td>${row.user_id}</td>
-        <td>${row.date_id}</td>
-        <td>${row.value}</td>`;
-    } else if (buttonId === 4) {
-      cells = `
-        <td>${row.id}</td>
-        <td>${row.type}</td>
-        <td>${row.desc}</td>
-        <td>${row.unit_of_measurement}</td>
-        <td>${row.day}/${row.month}/${row.year}</td>
-        <td>${row.value}</td>`;
-    }
-    return cells;
+      // table headers based on button pressed
+      let columnNames;
+      if (buttonId === 1) {
+        columnNames = ['#', 'Type', 'Description', 'Unit of Measurement'];
+      } else if (buttonId === 2) {
+        columnNames = ['#', 'id', 'day', 'month', 'year'];
+      } else if (buttonId === 3) {
+        columnNames = ['#', 'id', 'user_id', 'date_id', 'value'];
+      } else if (buttonId === 4) {
+        columnNames = ['#', 'id', 'Type', 'Description', 'Unit of Measurment', 'Date', 'value']
+      }
+      else {
+        return;
+      }
+      updateTableHeaders(columnNames);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+function getTableCells(buttonId, row) {
+  let cells = '';
+  if (buttonId === 1) { // HealthDim button
+    cells = `
+      <td contenteditable="true" onblur="saveCellValue('type', ${row.id}, this.textContent)">${row.type}</td>
+      <td contenteditable="true" onblur="saveCellValue('desc', ${row.id}, this.textContent)">${row.desc}</td>
+      <td contenteditable="true" onblur="saveCellValue('unit_of_measurement', ${row.id}, this.textContent)">${row.unit_of_measurement}</td>`;
+  } else if (buttonId === 2) { //DateDim button
+    cells = `
+      <td>${row.id}</td>
+      <td contenteditable="true" onblur="saveCellValue('day', ${row.id}, this.textContent)">${row.day}</td>
+      <td contenteditable="true" onblur="saveCellValue('month', ${row.id}, this.textContent)">${row.month}</td>
+      <td contenteditable="true" onblur="saveCellValue('year', ${row.id}, this.textContent)">${row.year}</td>`;
+  } else if (buttonId === 3) { // HealthFact buton
+    cells = `
+      <td>${row.id}</td>
+      <td>${row.user_id}</td>
+      <td>${row.date_id}</td>
+      <td contenteditable="true" onblur="saveCellValue('value', ${row.id}, this.textContent)">${row.value}</td>`;
+  } else if (buttonId === 4) { // CombinedData button
+    cells = `
+      <td>${row.id}</td>
+      <td>${row.type}</td>
+      <td>${row.desc}</td>
+      <td>${row.unit_of_measurement}</td>
+      <td>${row.day}/${row.month}/${row.year}</td>
+      <td contenteditable="true" onblur="saveCellValue('value', ${row.id}, this.textContent)">${row.value}</td>`;
   }
+  return cells;
+}
+</script>
+
+
+
+<script>
+  // updating table with new value
+  function saveCellValue(column, id, value) {
+  const data = { column, id, value };
+
+  fetch('/update_cell', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        const buttonId = getButtonIdFromColumn(column);
+        changeTableData(buttonId);
+      } else {
+        console.error('Failed to update cell value.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+  // Add an event listener to the table for capturing cell edits
+  document.getElementById('data-table').addEventListener('input', function(event) {
+    const cell = event.target;
+    const column = cell.dataset.column;
+    const id = cell.dataset.id;
+    const newValue = cell.textContent.trim();
+
+    saveCellValue(column, id, newValue);
+  });
 </script>
 
 </head>
+
+
+
+
+
 
 
 <body>
