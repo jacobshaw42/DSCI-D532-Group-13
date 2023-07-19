@@ -59,6 +59,19 @@ def query_button_3():
     conn.close()
     return df
 
+def query_button_4():
+    conn = sqlite3.connect('FinalProject.db')
+    c = conn.cursor()
+    c.execute("""SELECT HealthDim.*, DateDim.day, DateDim.month, DateDim.year, HealthFact.value
+              FROM HealthDim
+              JOIN HealthFact ON HealthDim.id = HealthFact.healthData_id
+              JOIN DateDim DateDim ON DateDim.id = HealthFact.date_id
+    """)
+    colnames = [row[0] for row in c.description]
+    df = pd.DataFrame(c.fetchall(), columns=colnames)
+    conn.close()
+    return df
+
 @app.route('/get_table_data')
 def get_table_data():
     button_id = int(request.args.get('id'))
@@ -73,6 +86,8 @@ def get_table_data():
         table_data = query_button_2()
     elif button_id == 3:
         table_data = query_button_3()
+    elif button_id == 4:
+        table_data = query_button_4()
     else:
         return jsonify([])
 
