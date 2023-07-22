@@ -12,6 +12,12 @@ Group 13 Contributors:
 
 <br>
 
-## Current Idea:
+## Idea:
 
 Create a website that can import a dataset from the Apple Health App that can display visualizations for descriptive statistics based on that dataset. 
+
+## Starting
+
+In a linux environment, use ```./start_up.sh``` to start the website locally.
+
+This will run the initializing of the database if it is not created, then it will run the app
