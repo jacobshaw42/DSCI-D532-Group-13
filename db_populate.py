@@ -52,5 +52,7 @@ for _, row in healthDataDim.iterrows():
     c.execute("INSERT INTO HealthDim (type, desc, unit_of_measurement) VALUES (?, ?, ?)",
               ( health_type, desc, unit_of_measurement))
 
+c.execute("INSERT INTO UserDim (id, name, email, password) VALUES(1,'example','example@example.com','example')")
+
 conn.commit()
 conn.close()
