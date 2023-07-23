@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+
+<!-- update the table headers -->
+<script>
+  function updateTableHeaders(columnNames, isCombinedDataButton) {
+    const tableHeader = document.getElementById('data-table').querySelector('thead');
+    tableHeader.innerHTML = '';
+
+    const headerRow = document.createElement('tr');
+
+    // Create the header cells based on the column names
+    columnNames.forEach(colname => {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.textContent = colname;
+      headerRow.appendChild(th);
+    });
+
+    // Add the "Actions" column header if it's the CombinedData button
+    if (isCombinedDataButton) {
+      const actionsTh = document.createElement('th');
+      actionsTh.scope = 'col';
+      actionsTh.textContent = 'Actions';
+      headerRow.appendChild(actionsTh);
+    }
+
+    tableHeader.appendChild(headerRow);
+  }
+</script>
+
+
+<!-- trigger when a button is clicked -->
+<script>
+  function changeTableData(buttonId) {
+    fetch(`/get_table_data?id=${buttonId}`)
+      .then(response => response.json())
+      .then(data => {
+        const tableBody = document.getElementById('data-table').querySelector('tbody');
+        tableBody.innerHTML = '';
+
+        data.forEach(row => {
+          const newRow = document.createElement('tr');
+          newRow.innerHTML = 
+          `<th scope="row">${row.row_number}</th>
+            ${getTableCells(buttonId, row)}`;
+          
+          // Add the Actions column for HealthFact button
+          if (buttonId === 3) {
+            newRow.innerHTML += `<td><a href="#" onclick="deleteRow(${row.id})">Delete</a></td>`;
+          }
+          
+          tableBody.appendChild(newRow);
+        });
+
+        // table headers based on button pressed
+        let columnNames;
+        if (buttonId === 1) {
+          columnNames = ['#', 'healthData_id','Type', 'Description', 'Unit of Measurement'];
+        } else if (buttonId === 2) {
+          columnNames = ['#', 'id', 'day', 'month', 'year'];
+        } else if (buttonId === 3) {
+          columnNames = ['#', 'healthData_id', 'user_id', 'date_id', 'value'];
+        } else if (buttonId === 4) {
+          columnNames = ['#', 'healthData_id', 'Type', 'Description', 'value', 'Unit of Measurment', 'Date'];
+          isCombinedDataButton = true;
+        }
+        else {
+          return;
+        }
+        updateTableHeaders(columnNames, buttonId === 3); // Pass true if it's the HealthFact button
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+}
+
+function getTableCells(buttonId, row) {
+  let cells = '';
+  if (buttonId === 1) { // HealthDim button
+    cells = `
+      <td>${row.id}</td>
+      <td contenteditable="true" onblur="saveCellValue('type', ${row.id}, this.textContent)">${row.type}</td>
+      <td contenteditable="true" onblur="saveCellValue('desc', ${row.id}, this.textContent)">${row.desc}</td>
+      <td contenteditable="true" onblur="saveCellValue('unit_of_measurement', ${row.id}, this.textContent)">${row.unit_of_measurement}</td>`;
+  } else if (buttonId === 2) { //DateDim button
+    cells = `
+      <td>${row.id}</td>
+      <td contenteditable="true" onblur="saveCellValue('day', ${row.id}, this.textContent)">${row.day}</td>
+      <td contenteditable="true" onblur="saveCellValue('month', ${row.id}, this.textContent)">${row.month}</td>
+      <td contenteditable="true" onblur="saveCellValue('year', ${row.id}, this.textContent)">${row.year}</td>`;
+  } else if (buttonId === 3) { // HealthFact buton
+    cells = `
+      <td>${row.healthData_id}</td>
+      <td>${row.user_id}</td>
+      <td>${row.date_id}</td>
+      <td contenteditable="true" onblur="saveCellValue('value', ${row.id}, this.textContent)">${row.value}</td>`;
+  } else if (buttonId === 4) { // CombinedData button
+    cells = `
+      <td>${row.healthData_id}</td>
+      <td>${row.type}</td>
+      <td>${row.desc}</td>
+      <td contenteditable="true" onblur="saveCellValue('value', ${row.id}, this.textContent)">${row.value}</td>
+      <td>${row.unit_of_measurement}</td>
+      <td>${row.day}/${row.month}/${row.year}</td>`;
+  }
+  return cells;
+}
+</script>
+
+<script>
+  function deleteRow(id) {
+    fetch(`/delete_health_fact/${id}`, {
+      method: 'GET',
+    })
+    .then(response => {
+      if (response.redirected) {
+        window.location.href = response.url; // Redirect to the home page
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  }
+</script>
+
+
+<script>
+  // updating table with new value
+  function saveCellValue(column, id, value) {
+  const data = { column, id, value };
+
+  fetch('/update_cell', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        const buttonId = getButtonIdFromColumn(column);
+        changeTableData(buttonId);
+      } else {
+        console.error('Failed to update cell value.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+  // Add an event listener to the table for capturing cell edits
+  document.getElementById('data-table').addEventListener('input', function(event) {
+    const cell = event.target;
+    const column = cell.dataset.column;
+    const id = cell.dataset.id;
+    const newValue = cell.textContent.trim();
+
+    saveCellValue(column, id, newValue);
+  });
+</script>
+
+</head>
+
+
+
+
+
+
+
+<body>
+
+  <!-- top navigation bar -->
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Navbar</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Visuals</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://dbdiagram.io/d/64a0547802bd1c4a5e58be80" target="_blank">Schema</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/upload">
+              Upload
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="http://localhost:5000/">
+              SignOut
+            </a>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- create button menu -->
+  <div class="list-group-container">
+    <div class="list-group">
+      <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(1)">HealthDim</button>
+      <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(2)">DateDim</button>
+      <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(3)">HealthFact</button>
+      <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(4)">View</button>
+    </div>
+  </div>
+
+  <!-- change button menue size -->
+  <style>
+    .list-group-container {
+      max-width: 300px;
+      /* Adjust the width as needed */
+      margin: 0 auto;
+      /* Center the list group horizontally */
+    }
+  </style>
+
+  <!-- create table -->
+  <div class="table-container">
+    <table id="data-table" class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Type</th>
+          <th scope="col">Description</th>
+          <th scope="col">Unit of Measurement</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for index, row in HealthDim_query.iterrows() %}
+        <tr>
+          <th scope="row">{{ row['row_number'] }}</th>
+          <td>{{ row['type'] }}</td>
+          <td>{{ row['desc'] }}</td>
+          <td>{{ row['unit_of_measurement'] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- change table size  -->
+  <style>
+    .table-container {
+      max-width: 1100px;
+      /* Adjust the width as needed */
+      margin: 0 auto;
+      /* Center the table horizontally */
+    }
+  </style>
+
+  <!-- nav buttons (previous/next) -->
+  <div class="row navigation-buttons">
+    <div class="col-6 text-start">
+      {% if start_row > 0 %}
+      <a href="/get_table_data?id={{buttonId}}&start_row={{ start_row - num_rows }}">&lt; Previous</a>
+      {% endif %}
+    </div>
+    <div class="col-6 text-end">
+      <a href="/get_table_data?id={{buttonId}}&start_row={{ start_row + num_rows }}">Next &gt;</a>
+    </div>
+  </div>
+
+  <!-- create input box -->
+  <div class="input-group-container">
+    <div class="input-group mb-3">
+      <span class="input-group-text">@</span>
+      <div class="form-floating">
+        <input type="text" class="form-control" id="floatingInputGroup1" placeholder="Username">
+        <label for="floatingInputGroup1">Username</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- change input box size -->
+  <style>
+    .input-group-container {
+      max-width: 600px;
+      /* Adjust the width as needed */
+      margin: 0 auto;
+      /* Center the input group horizontally */
+    }
+  </style>
+
+  <!-- arrow buttons -->
+  <style>
+    .navigation-buttons {
+      margin-top: 20px;
+    }
+
+    .navigation-buttons a {
+      text-decoration: none;
+    }
+  </style>
+
+  <!-- <h1>Hello, world!</h1> -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+
+
+
+</body>
+
+</html>

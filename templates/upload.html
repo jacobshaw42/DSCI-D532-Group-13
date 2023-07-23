@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/static/login.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Upload</title>
+</head>
+<body>
+    <div class="box">
+    <div class="container">
+    <form method='POST' action="" enctype="multipart/form-data">
+        {{form.hidden_tag()}}
+        <fieldset>
+        <div class="form-group">
+            {{form.file.label(class="form-control-label")}}
+            {% if form.file.errors %}
+                {{ form.file(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.file.errors %}
+                        <span> {{error}}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.file() }}
+              <!--  {{ form.file(class="form-control form-control-lg") }} -->
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{form.submit.label(class="form-control-label")}}
+            {% if form.submit.errors %}
+                {{ form.submit(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.submit.errors %}
+                        <span> {{error}}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.submit()}}
+                <!--{{ form.submit(class="form-control form-control-lg") }}-->
+            {% endif %}
+        </div>
+        </fieldset>
+    </form>
+    </div>
+    </div>
+</body>
+</html>
