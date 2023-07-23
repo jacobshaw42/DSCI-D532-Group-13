@@ -16,7 +16,17 @@ Group 13 Contributors:
 
 Create a website that can import a dataset from the Apple Health App that can display visualizations for descriptive statistics based on that dataset. 
 
-## Starting
+## Getting Started
+
+Start by creating a python virtual environment, activating it, and installing dependencies in the ```requirements.txt``` file
+
+### Windows
+
+First, if you have not already created the FinalProject.db, run the ```db_populate.py``` script
+
+Now (or if you already have the FinalProject.db) run the ```app.py``` script
+
+### Linux
 
 In a linux environment, use ```./start_up.sh``` to start the website locally.
 

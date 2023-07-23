@@ -37,8 +37,8 @@ df3["year"] = pd.to_datetime(df3["Date"]).dt.year
 types_index = {x:ind for ind,x in enumerate(df3["type"].unique())}
 date_index = {x:ind for ind,x in enumerate(df3["Date"].unique())}
 
-df3.loc[:,"date_index"] = df3["Date"].apply(lambda x: date_index[x])
-df3.loc[:,"type_index"] = df3["type"].apply(lambda x: types_index[x])
+df3.loc[:,"date_index"] = df3["Date"].apply(lambda x: 1+date_index[x])
+df3.loc[:,"type_index"] = df3["type"].apply(lambda x: 1+types_index[x])
 
 healthDataFact = df3.loc[:,["date_index","type_index","value"]]
 healthDataDim = df3.loc[:,["type_index","type","type_unit_of_measurement"]].drop_duplicates()

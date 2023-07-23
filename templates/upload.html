@@ -8,7 +8,7 @@
 <body>
     <div class="box">
     <div class="container">
-    <form method='POST' action="">
+    <form method='POST' action="" enctype="multipart/form-data">
         {{form.hidden_tag()}}
         <fieldset>
         <div class="form-group">
@@ -21,7 +21,8 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.file(class="form-control form-control-lg") }}
+                {{ form.file() }}
+              <!--  {{ form.file(class="form-control form-control-lg") }} -->
             {% endif %}
         </div>
         <div class="form-group">
@@ -34,20 +35,12 @@
                     {% endfor %}
                 </div>
             {% else %}
-                {{ form.submit(class="form-control form-control-lg") }}
+                {{ form.submit()}}
+                <!--{{ form.submit(class="form-control form-control-lg") }}-->
             {% endif %}
         </div>
         </fieldset>
-        <div class="form-group">
-            {% for message in get_flashed_messages() %}
-            {{message}}
-            {% endfor %}
-            {{ form.submit(class="btn btn-outline-info")}}
-        </div>
     </form>
-    <div class="signup-link">
-        <button id="signupLink" type="button">SignUp</button>
-    </div>
     </div>
     </div>
 </body>
