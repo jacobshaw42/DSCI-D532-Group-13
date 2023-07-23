@@ -121,7 +121,7 @@ function getTableCells(buttonId, row) {
     })
     .then(response => {
       if (response.redirected) {
-        window.location.href = response.url; // Redirect to the home page
+        window.location.href = response.url;
       }
     })
     .catch(error => {
@@ -195,7 +195,7 @@ function getTableCells(buttonId, row) {
             <a class="nav-link" href="#">Visuals</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Schema</a>
+            <a class="nav-link" href="/schema">Schema</a>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -293,7 +293,7 @@ function getTableCells(buttonId, row) {
   <style>
     .input-group-container {
       max-width: 600px;
-      /* Adjust the width as needed */
+      /* Adjust the width */
       margin: 0 auto;
       /* Center the input group horizontally */
     }

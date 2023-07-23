@@ -104,6 +104,10 @@ def query_button_4():
     conn.close()
     return df
 
+@app.route('/schema')
+def schema_page():
+    return render_template('schema.html')
+
 @app.route('/get_table_data')
 def get_table_data():
     button_id = int(request.args.get('id'))
