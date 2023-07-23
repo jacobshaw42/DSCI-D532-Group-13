@@ -123,7 +123,7 @@ function getTableCells(buttonId, row) {
     })
     .then(response => {
       if (response.redirected) {
-        window.location.href = response.url; // Redirect to the home page
+        window.location.href = response.url;
       }
     })
     .catch(error => {
@@ -200,12 +200,12 @@ function getTableCells(buttonId, row) {
             <a class="nav-link" href="https://dbdiagram.io/d/64a0547802bd1c4a5e58be80" target="_blank">Schema</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="http://localhost:5000/upload">
+            <a class="nav-link" href="http://127.0.0.1:5000/upload">
               Upload
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="http://localhost:5000/">
+            <a class="nav-link" href="http://127.0.0.1:5000/">
               SignOut
             </a>
         </ul>
@@ -294,7 +294,7 @@ function getTableCells(buttonId, row) {
   <style>
     .input-group-container {
       max-width: 600px;
-      /* Adjust the width as needed */
+      /* Adjust the width */
       margin: 0 auto;
       /* Center the input group horizontally */
     }
