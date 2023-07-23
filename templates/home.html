@@ -64,7 +64,7 @@
         // table headers based on button pressed
         let columnNames;
         if (buttonId === 1) {
-          columnNames = ['#', 'Type', 'Description', 'Unit of Measurement'];
+          columnNames = ['#', 'healthData_id','Type', 'Description', 'Unit of Measurement'];
         } else if (buttonId === 2) {
           columnNames = ['#', 'id', 'day', 'month', 'year'];
         } else if (buttonId === 3) {
@@ -87,6 +87,7 @@ function getTableCells(buttonId, row) {
   let cells = '';
   if (buttonId === 1) { // HealthDim button
     cells = `
+      <td>${row.id}</td>
       <td contenteditable="true" onblur="saveCellValue('type', ${row.id}, this.textContent)">${row.type}</td>
       <td contenteditable="true" onblur="saveCellValue('desc', ${row.id}, this.textContent)">${row.desc}</td>
       <td contenteditable="true" onblur="saveCellValue('unit_of_measurement', ${row.id}, this.textContent)">${row.unit_of_measurement}</td>`;
