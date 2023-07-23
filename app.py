@@ -3,10 +3,8 @@ from flask_session import Session
 import sqlite3
 import pandas as pd
 from login import LoginForm, SignUpForm, UpLoadCSV
-from wtforms import ValidationError
 from upload import upload_csv
 import os
-import sys
 
 app = Flask(__name__)
 app.debug = True
