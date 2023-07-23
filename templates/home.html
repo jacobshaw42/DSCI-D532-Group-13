@@ -103,12 +103,12 @@ function getTableCells(buttonId, row) {
       <td>${row.user_id}</td>
       <td>${row.date_id}</td>
       <td contenteditable="true" onblur="saveCellValue('value', ${row.id}, this.textContent)">${row.value}</td>`;
-  } else if (buttonId === 4) { // CombinedData button
+  } else if (buttonId === 4) { // View button
     cells = `
       <td>${row.healthData_id}</td>
       <td>${row.type}</td>
       <td>${row.desc}</td>
-      <td contenteditable="true" onblur="saveCellValue('value', ${row.id}, this.textContent)">${row.value}</td>
+      <td>${row.value}</td>
       <td>${row.unit_of_measurement}</td>
       <td>${row.day}/${row.month}/${row.year}</td>`;
   }
