@@ -79,6 +79,8 @@ def upload_csv(path, user_id):
 
     newDate.to_sql('DateDim',conn,if_exists='append',index=False)
     healthDataFact.to_sql('HealthFact', conn, if_exists='append',index=False)
+#    print(newDate)
 
 
-#upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
+
+upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)

@@ -90,7 +90,7 @@ def query_button_2():
 def query_button_3():
     conn = sqlite3.connect('FinalProject.db')
     c = conn.cursor()
-    c.execute(f"SELECT healthData_id, user_id, date_id, value, ROW_NUMBER() OVER(ORDER BY id) as row_number FROM HealthFact WHERE user_id={session['user_id']}")
+    c.execute(f"SELECT id, healthData_id, user_id, date_id, value, ROW_NUMBER() OVER(ORDER BY id) as row_number FROM HealthFact WHERE user_id={session['user_id']}")
     colnames = [row[0] for row in c.description]
     df = pd.DataFrame(c.fetchall(), columns=colnames)
     conn.close()
