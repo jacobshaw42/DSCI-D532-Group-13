@@ -7,8 +7,8 @@
 Group 13 Contributors:
 
 - Elizabeth Varghese
-- Jacob Shaw
 - Kamil Kosidlak
+- Jacob Shaw
 
 <br>
 
