@@ -81,4 +81,4 @@ def upload_csv(path, user_id):
     healthDataFact.to_sql('HealthFact', conn, if_exists='append',index=False)
 
 
-upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
+#upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)

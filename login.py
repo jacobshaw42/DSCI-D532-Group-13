@@ -20,4 +20,4 @@ class SignUpForm(FlaskForm):
     
 class UpLoadCSV(FlaskForm):
     file = FileField("file")
-    submit = SubmitField("Upload")
+    submit = SubmitField("Submit")

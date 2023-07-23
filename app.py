@@ -4,6 +4,7 @@ import sqlite3
 import pandas as pd
 from login import LoginForm, SignUpForm, UpLoadCSV
 from wtforms import ValidationError
+from upload import upload_csv
 import os
 import sys
 
@@ -12,6 +13,7 @@ app.debug = True
 app.config["SECRET_KEY"]=os.urandom(32)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["UPLOAD_FOLDER"] = "static/files"
 Session(app)
 
 
@@ -58,10 +60,15 @@ def signup_page():
 
 @app.route('/home')
 def home_page():
-    start_row = int(request.args.get('start_row', 0))  # Get the starting row index
-    num_rows = 10  # Display 10 rows at a time
-    HealthDim_query = query_button_1(start_row, num_rows)
-    return render_template('home.html', HealthDim_query=HealthDim_query, num_rows=num_rows, start_row=start_row)
+    if 'user_id' not in list(session.keys()):
+        return login_page()
+    elif session['user_id'] is None:
+        return login_page()
+    else:
+        start_row = int(request.args.get('start_row', 0))  # Get the starting row index
+        num_rows = 10  # Display 10 rows at a time
+        HealthDim_query = query_button_1(start_row, num_rows)
+        return render_template('home.html', HealthDim_query=HealthDim_query, num_rows=num_rows, start_row=start_row)
 
 def query_button_1(start_row, num_rows):
     conn = sqlite3.connect('FinalProject.db')
@@ -164,15 +171,19 @@ def update_cell():
     conn.close()
     return jsonify({'success': True})
 
-"""
+
 @app.route('/upload', methods=["GET","POST"])
 def upload_page():
     form = UpLoadCSV()
     if form.validate_on_submit():
-        uploaded = request.files('file')
+        uploaded = request.files.get('file')
         if uploaded.filename != "":
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], uploaded.filename)
-"""
+            uploaded.save(file_path)
+            upload_csv(file_path, session['user_id'])
+            return home_page()
+    return render_template('upload.html', title="Upload", form=form)
+            
 
 @app.route('/delete/<int:id>', methods=['GET'])
 def delete_row(id):
