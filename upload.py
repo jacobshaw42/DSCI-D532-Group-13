@@ -83,4 +83,4 @@ def upload_csv(path, user_id):
 
 
 
-upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
+#upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
