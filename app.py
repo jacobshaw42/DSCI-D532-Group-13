@@ -34,7 +34,8 @@ def login_page():
             flash("Email is not valid!", category="warning")
         elif form.email.data == user[2] and form.password.data == user[3]:
             session["user_id"] = user[0]
-            return home_page()
+            return redirect(url_for("home_page"))
+            #return home_page()
         else:
             flash("Invalid Password!",category="warning")
     return render_template('login.html', title="Login", form=form)
@@ -61,9 +62,9 @@ def signup_page():
 @app.route('/home')
 def home_page():
     if 'user_id' not in list(session.keys()):
-        return login_page()
+        return redirect(url_for("login_page"))
     elif session['user_id'] is None:
-        return login_page()
+        return redirect(url_for("login_page"))
     else:
         start_row = int(request.args.get('start_row', 0))  # Get the starting row index
         num_rows = 10  # Display 10 rows at a time
@@ -113,88 +114,107 @@ def query_button_4():
 
 @app.route('/get_table_data')
 def get_table_data():
-    button_id = int(request.args.get('id'))
-
-    if button_id == 1:
-        start_row = int(request.args.get('start_row', 0))
-        num_rows = 10
-        table_data = query_button_1(start_row, num_rows)
-    elif button_id == 2:
-        start_row = int(request.args.get('start_row', 0))
-        num_rows = 10
-        table_data = query_button_2()
-    elif button_id == 3:
-        start_row = int(request.args.get('start_row', 0))
-        num_rows = 10
-        table_data = query_button_3()
-    elif button_id == 4:
-        table_data = query_button_4()
+    if 'user_id' not in list(session.keys()):
+        return redirect(url_for("login_page"))
+    elif session['user_id'] is None:
+        return redirect(url_for("login_page"))
     else:
-        return jsonify([])
+        button_id = int(request.args.get('id'))
 
-    table_data_list = table_data.to_dict('records')
-    return jsonify(table_data_list)
+        if button_id == 1:
+            start_row = int(request.args.get('start_row', 0))
+            num_rows = 10
+            table_data = query_button_1(start_row, num_rows)
+        elif button_id == 2:
+            start_row = int(request.args.get('start_row', 0))
+            num_rows = 10
+            table_data = query_button_2()
+        elif button_id == 3:
+            start_row = int(request.args.get('start_row', 0))
+            num_rows = 10
+            table_data = query_button_3()
+        elif button_id == 4:
+            table_data = query_button_4()
+        else:
+            return jsonify([])
+
+        table_data_list = table_data.to_dict('records')
+        return jsonify(table_data_list)
     
 @app.route('/update_cell', methods=['POST'])
 def update_cell():
-    conn = sqlite3.connect('FinalProject.db')
-    c = conn.cursor()
-    data = request.get_json()
-    column = data['column']
-    id = data['id']
-    value = data['value']
-
-    if column == 'type':
-        table = 'HealthDim'
-        update_column = 'type'
-    elif column == 'desc':
-        table = 'HealthDim'
-        update_column = 'desc'
-    elif column == 'unit_of_measurement':
-        table = 'HealthDim'
-        update_column = 'unit_of_measurement'
-    elif column == 'day':
-        table = 'DateDim'
-        update_column = 'day'
-    elif column == 'month':
-        table = 'DateDim'
-        update_column = 'month'
-    elif column == 'year':
-        table = 'DateDim'
-        update_column = 'year'
-    elif column == 'value':
-        table = 'HealthFact'
-        update_column = 'value'
+    if 'user_id' not in list(session.keys()):
+        return redirect(url_for("login_page"))
+    elif session['user_id'] is None:
+        return redirect(url_for("login_page"))
     else:
-        return jsonify({'success': False})
+        conn = sqlite3.connect('FinalProject.db')
+        c = conn.cursor()
+        data = request.get_json()
+        column = data['column']
+        id = data['id']
+        value = data['value']
 
-    c.execute(f"UPDATE {table} SET {update_column} = ? WHERE id = ?", (value, id))
-    conn.commit()
-    conn.close()
-    return jsonify({'success': True})
+        if column == 'type':
+            table = 'HealthDim'
+            update_column = 'type'
+        elif column == 'desc':
+            table = 'HealthDim'
+            update_column = 'desc'
+        elif column == 'unit_of_measurement':
+            table = 'HealthDim'
+            update_column = 'unit_of_measurement'
+        elif column == 'day':
+            table = 'DateDim'
+            update_column = 'day'
+        elif column == 'month':
+            table = 'DateDim'
+            update_column = 'month'
+        elif column == 'year':
+            table = 'DateDim'
+            update_column = 'year'
+        elif column == 'value':
+            table = 'HealthFact'
+            update_column = 'value'
+        else:
+            return jsonify({'success': False})
+
+        c.execute(f"UPDATE {table} SET {update_column} = ? WHERE id = ?", (value, id))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True})
 
 
 @app.route('/upload', methods=["GET","POST"])
 def upload_page():
     form = UpLoadCSV()
-    if form.validate_on_submit():
+    if 'user_id' not in list(session.keys()):
+        return redirect(url_for("login_page"))
+    elif session['user_id'] is None:
+        return redirect(url_for("login_page"))
+    elif form.validate_on_submit():
         uploaded = request.files.get('file')
         if uploaded.filename != "":
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], uploaded.filename)
             uploaded.save(file_path)
             upload_csv(file_path, session['user_id'])
-            return home_page()
+            return redirect(url_for("home_page"))
     return render_template('upload.html', title="Upload", form=form)
             
 
 @app.route('/delete_health_fact/<int:id>', methods=['GET'])
 def delete_health_fact(id):
-    conn = sqlite3.connect('FinalProject.db')
-    c = conn.cursor()
-    c.execute(f"DELETE FROM HealthFact WHERE id=?", (id,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for('home_page'))
+    if 'user_id' not in list(session.keys()):
+        return redirect(url_for("login_page"))
+    elif session['user_id'] is None:
+        return redirect(url_for("login_page"))
+    else:
+        conn = sqlite3.connect('FinalProject.db')
+        c = conn.cursor()
+        c.execute(f"DELETE FROM HealthFact WHERE id=?", (id,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('home_page'))
 
 
 if __name__ == '__main__':
