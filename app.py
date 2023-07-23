@@ -164,6 +164,15 @@ def update_cell():
     conn.close()
     return jsonify({'success': True})
 
+@app.route('/delete/<int:id>', methods=['GET'])
+def delete_row(id):
+    conn = sqlite3.connect('FinalProject.db')
+    c = conn.cursor()
+    c.execute(f"DELETE FROM HealthDim WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('home_page'))
+
 
 if __name__ == '__main__':
     app.run()
