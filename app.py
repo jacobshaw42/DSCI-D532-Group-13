@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, redirect, flash, url
 from flask_session import Session
 import sqlite3
 import pandas as pd
-from login import LoginForm, SignUpForm
+from login import LoginForm, SignUpForm, UpLoadCSV
 from wtforms import ValidationError
 import os
 import sys
@@ -164,6 +164,15 @@ def update_cell():
     conn.close()
     return jsonify({'success': True})
 
+"""
+@app.route('/upload', methods=["GET","POST"])
+def upload_page():
+    form = UpLoadCSV()
+    if form.validate_on_submit():
+        uploaded = request.files('file')
+        if uploaded.filename != "":
+            file_path = os.path.join(app.config["UPLOAD_FOLDER"], uploaded.filename)
+"""
 
 if __name__ == '__main__':
     app.run()
