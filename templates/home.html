@@ -51,28 +51,31 @@
           const newRow = document.createElement('tr');
           newRow.innerHTML = 
           `<th scope="row">${row.row_number}</th>
-            ${getTableCells(buttonId, row)}
-            ${buttonId === 4 ? `<td><a href="/delete/${row.id}" >Delete</a></td>` : ''}`;
+            ${getTableCells(buttonId, row)}`;
+          
+          // Add the Actions column for HealthFact button
+          if (buttonId === 3) {
+            newRow.innerHTML += `<td><a href="#" onclick="deleteRow(${row.id})">Delete</a></td>`;
+          }
+          
           tableBody.appendChild(newRow);
         });
 
         // table headers based on button pressed
         let columnNames;
-        let isCombinedDataButton = false;
         if (buttonId === 1) {
           columnNames = ['#', 'Type', 'Description', 'Unit of Measurement'];
         } else if (buttonId === 2) {
           columnNames = ['#', 'id', 'day', 'month', 'year'];
         } else if (buttonId === 3) {
-          columnNames = ['#', 'id', 'user_id', 'date_id', 'value'];
+          columnNames = ['#', 'id', 'user_id', 'date_id', 'value']; // Exclude Actions column for other buttons
         } else if (buttonId === 4) {
-          columnNames = ['#', 'id', 'Type', 'Description', 'value', 'Unit of Measurment', 'Date'];
-          isCombinedDataButton = true;
+          columnNames = ['#', 'id', 'Type', 'Description', 'value', 'Unit of Measurement', 'Date'];
         }
         else {
           return;
         }
-        updateTableHeaders(columnNames, isCombinedDataButton);
+        updateTableHeaders(columnNames, buttonId === 3); // Pass true if it's the HealthFact button
       })
       .catch(error => {
         console.error('Error:', error);
@@ -113,17 +116,17 @@ function getTableCells(buttonId, row) {
 
 <script>
   function deleteRow(id) {
-      fetch(`/delete/${id}`, {
-          method: 'GET',
-      })
-      .then(response => {
-          if (response.redirected) {
-              window.location.href = response.url; // Redirect to the home page
-          }
-      })
-      .catch(error => {
-          console.error('Error:', error);
-      });
+    fetch(`/delete_health_fact/${id}`, {
+      method: 'GET',
+    })
+    .then(response => {
+      if (response.redirected) {
+        window.location.href = response.url; // Redirect to the home page
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
   }
 </script>
 
@@ -215,7 +218,7 @@ function getTableCells(buttonId, row) {
       <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(1)">HealthDim</button>
       <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(2)">DateDim</button>
       <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(3)">HealthFact</button>
-      <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(4)">CombinedData</button>
+      <button type="button" class="list-group-item list-group-item-action" onclick="changeTableData(4)">View</button>
     </div>
   </div>
 
@@ -238,7 +241,6 @@ function getTableCells(buttonId, row) {
           <th scope="col">Type</th>
           <th scope="col">Description</th>
           <th scope="col">Unit of Measurement</th>
-          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -248,9 +250,6 @@ function getTableCells(buttonId, row) {
           <td>{{ row['type'] }}</td>
           <td>{{ row['desc'] }}</td>
           <td>{{ row['unit_of_measurement'] }}</td>
-          <td>
-            <a href="/delete/{{ row['id'] }}">Delete</a>
-          </td>
         </tr>
         {% endfor %}
       </tbody>

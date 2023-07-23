@@ -174,11 +174,11 @@ def upload_page():
             file_path = os.path.join(app.config["UPLOAD_FOLDER"], uploaded.filename)
 """
 
-@app.route('/delete/<int:id>', methods=['GET'])
-def delete_row(id):
+@app.route('/delete_health_fact/<int:id>', methods=['GET'])
+def delete_health_fact(id):
     conn = sqlite3.connect('FinalProject.db')
     c = conn.cursor()
-    c.execute(f"DELETE FROM HealthDim WHERE id=?", (id,))
+    c.execute(f"DELETE FROM HealthFact WHERE id=?", (id,))
     conn.commit()
     conn.close()
     return redirect(url_for('home_page'))
