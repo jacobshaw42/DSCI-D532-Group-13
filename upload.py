@@ -51,20 +51,20 @@ def upload_csv(path, user_id):
     conn = sqlite3.connect('FinalProject.db')
 
     curDates = pd.read_sql("SELECT * FROM DateDim", conn)
-    print(curDates)
+#    print(curDates)
     dateDim.rename(columns={'date_index':'id'},inplace=True)
     dateDim.loc[750] = ['751', 22,6,2023]
-    print(dateDim)
+#    print(dateDim)
     
     joined = pd.merge(curDates, dateDim,on=['day','month','year'],how='right',suffixes=('_old','_new'))
     #print(joined)
     changed = joined.loc[joined.id_old != joined.id_new, :]
     changed.id_old = changed['id_old'].fillna(changed["id_new"])
     newDate = changed.loc[changed.id_old == changed.id_new,:].rename(columns={'id_old':'id'}).drop('id_new',axis=1)
-    print(changed)
-    print(newDate)
+#    print(changed)
+#    print(newDate)
     fix = {int(row['id_new']): int(row['id_old'])  for i, row in changed.iterrows()}
-    print(fix)
+#    print(fix)
     
     keys = fix.keys()
     healthDataFact.date_index = healthDataFact.date_index.apply(lambda x: fix[x] if x in keys else x)
@@ -73,9 +73,9 @@ def upload_csv(path, user_id):
     
     date_index2 = healthDataFact.date_id.to_list()
     
-    print(healthDataFact.head(20))
+#    print(healthDataFact.head(20))
     
-    print( date_index1 == date_index2)
+#    print( date_index1 == date_index2)
 
     newDate.to_sql('DateDim',conn,if_exists='append',index=False)
     healthDataFact.to_sql('HealthFact', conn, if_exists='append',index=False)
@@ -83,4 +83,4 @@ def upload_csv(path, user_id):
 
 
 
-upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
+#upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
