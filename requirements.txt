@@ -3,3 +3,4 @@ flask
 flask_session
 flask_wtf
 email_validator
+seaborn

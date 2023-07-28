@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <link rel="stylesheet" href="/static/login.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Visual</title>
+</head>
+
+<body>
+<!-- <script>
+    function myhref() {
+        location.href =
+            "http://127.0.0.1:5000/visual.html";
+    }
+</script>  -->
+
+{% for chart_data in chart_data_list %}
+<h2 style="color: red;">{{ header_name[loop.index - 1] }}</h2>
+<img src="data:image/png;base64,{{ chart_data }}" alt="Visual {{ loop.index }}">
+{% endfor %}
+
+</body>
+</html>
+
