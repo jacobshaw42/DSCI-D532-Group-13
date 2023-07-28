@@ -82,5 +82,4 @@ def upload_csv(path, user_id):
 #    print(newDate)
 
 
-
 #upload_csv('/home/jacob/dsci532/FinalProject/DSCI-D532-Group-13/second.csv',2)
